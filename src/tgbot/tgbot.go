@@ -21,8 +21,8 @@ type TgBot struct {
 	lg    *zap.Logger
 }
 
-func NewTgBot(rds *redis.Client, tgapi *tgbotapi.BotAPI) *TgBot {
-	return &TgBot{rds: rds, tgapi: tgapi}
+func NewTgBot(rds *redis.Client, tgapi *tgbotapi.BotAPI, lg *zap.Logger) *TgBot {
+	return &TgBot{rds: rds, tgapi: tgapi, lg: lg}
 }
 
 func (self *TgBot) HandleUpdate(update tgbotapi.Update) {

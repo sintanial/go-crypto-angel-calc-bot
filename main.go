@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	telegrambotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"log"
 	"math/rand"
 	"time"
@@ -29,7 +31,8 @@ func main() {
 
 	tgbotapi, err := telegrambotapi.NewBotAPI(*tgbotToken)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalln("failed create new bot api", "token", *tgbotToken, "err", err)
+		return
 	}
 	tgbotapi.Debug = false
 
@@ -37,7 +40,8 @@ func main() {
 		Addr: *redisDsn,
 	})
 	if err := rdb.Ping(context.Background()).Err(); err != nil {
-		log.Panic(err)
+		log.Fatalln("failed connect to redis server", "dsn", *redisDsn, "err", err)
+		return
 	}
 
 	u := telegrambotapi.NewUpdate(0)
@@ -47,7 +51,16 @@ func main() {
 
 	fmt.Println("bot is started .....")
 
-	bot := tgbot.NewTgBot(rdb, tgbotapi)
+	zapconf := zap.NewDevelopmentConfig()
+	zapconf.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	zapconf.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	zaplog, err := zapconf.Build()
+	if err != nil {
+		log.Fatalln("failed create zap logger")
+		return
+	}
+
+	bot := tgbot.NewTgBot(rdb, tgbotapi, zaplog)
 
 	for update := range updates {
 		log.Println("incoming update", update)
