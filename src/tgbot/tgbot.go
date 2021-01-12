@@ -16,13 +16,14 @@ const StateSetRiskPercentage = "set_risk_percentage"
 const StateGetOfferVolume = "get_offer_volume"
 
 type TgBot struct {
-	rds   *redis.Client
-	tgapi *tgbotapi.BotAPI
-	lg    *zap.Logger
+	rds     *redis.Client
+	tgapi   *tgbotapi.BotAPI
+	lg      *zap.Logger
+	support string
 }
 
-func NewTgBot(rds *redis.Client, tgapi *tgbotapi.BotAPI, lg *zap.Logger) *TgBot {
-	return &TgBot{rds: rds, tgapi: tgapi, lg: lg}
+func NewTgBot(rds *redis.Client, tgapi *tgbotapi.BotAPI, lg *zap.Logger, support string) *TgBot {
+	return &TgBot{rds: rds, tgapi: tgapi, lg: lg, support: support}
 }
 
 func (self *TgBot) HandleUpdate(update tgbotapi.Update) {
@@ -227,7 +228,13 @@ func (self *TgBot) sendTgDefaultMessage(chatId int64) {
 
 func (self *TgBot) sendTgInternalErrorMessage(chatId int64, log string, err error) {
 	self.lg.Error(log, zap.Error(err))
-	self.sendTgMessage(chatId, "Что то пошло не так, попробуйте снова")
+	msg := "Что то пошло не так, попробуйте снова"
+
+	if self.support != "" {
+		msg += " или обратитесь в чат @" + self.support
+	}
+
+	self.sendTgMessage(chatId, msg)
 }
 
 func (self *TgBot) setRiskPercentage(userId int, percent float64) error {

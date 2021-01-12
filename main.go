@@ -22,6 +22,7 @@ func init() {
 func main() {
 	tgbotToken := flag.String("token", "", "Telegram bot token")
 	redisDsn := flag.String("redis", "localhost:6379", "Redis DSN address")
+	tgSupportUsername := flag.String("support", "", "Telegram support username")
 	flag.Parse()
 
 	if *tgbotToken == "" {
@@ -60,7 +61,7 @@ func main() {
 		return
 	}
 
-	bot := tgbot.NewTgBot(rdb, tgbotapi, zaplog)
+	bot := tgbot.NewTgBot(rdb, tgbotapi, zaplog, *tgSupportUsername)
 
 	for update := range updates {
 		log.Println("incoming update", update)
