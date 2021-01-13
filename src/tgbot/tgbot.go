@@ -27,6 +27,12 @@ func NewTgBot(rds *redis.Client, tgapi *tgbotapi.BotAPI, lg *zap.Logger, support
 }
 
 func (self *TgBot) HandleUpdate(update tgbotapi.Update) {
+	defer func() {
+		if err := recover(); err != nil {
+			self.lg.Error("UNHANDLE PANIC", zap.Any("err", err))
+		}
+	}()
+
 	if update.Message != nil {
 		if update.Message.IsCommand() {
 			cmd := update.Message.Command()
