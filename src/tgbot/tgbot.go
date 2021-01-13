@@ -219,8 +219,8 @@ func (self *TgBot) OnRequestCalc(update tgbotapi.Update, data string) {
 	replyText += fmt.Sprintf("Для открытия позиции \n\n")
 	replyText += fmt.Sprintf("Объём средств: *$%.2f*\n\n", positionVolume)
 	replyText += fmt.Sprintf("Кол-во токенов (с риском *%.2f%%*):\n\n", risk)
-	replyText += fmt.Sprintf("При цене входа *$%.2f*:  *%v* `%.4f`\n", offer.MaxRangePrice, offer.CryptoCode, minTokenVolume*risk)
-	replyText += fmt.Sprintf("При цене входа *$%.2f*:  *%v* `%.4f`", offer.MinRangePrice, offer.CryptoCode, maxTokenVolume*risk)
+	replyText += fmt.Sprintf("При цене входа *$%.2f*:\n*%v* `%.4f`\n\n", offer.MaxRangePrice, offer.CryptoCode, minTokenVolume*risk)
+	replyText += fmt.Sprintf("При цене входа *$%.2f*:\n*%v* `%.4f`", offer.MinRangePrice, offer.CryptoCode, maxTokenVolume*risk)
 
 	self.sendTgMessage(update.Message.Chat.ID, replyText)
 }
