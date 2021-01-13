@@ -149,10 +149,20 @@ func (self *TgBot) OnGetCryptoAngelOffer(update tgbotapi.Update) {
 	cryptoCode := strings.Replace(cryptoCodeSubmatch[0][1], "USDT", "", -1)
 
 	rangePriceSubmatch := parseInputRangePrice.FindAllStringSubmatch(text, -1)
+	if len(rangePriceSubmatch) == 0 || len(rangePriceSubmatch[0]) < 2 {
+		self.sendTgMessage(update.Message.Chat.ID, "Неверный формат сообщения. Видимо вы отправили не то сообщения, попробуйте отправить другой сообщения где будет информация об открытии позиции")
+		return
+	}
+
 	minRangePrice, _ := strconv.ParseFloat(rangePriceSubmatch[0][1], 64)
 	maxRangePrice, _ := strconv.ParseFloat(rangePriceSubmatch[0][2], 64)
 
 	stopPriceSubmatch := parseStopPrice.FindAllStringSubmatch(text, -1)
+	if len(stopPriceSubmatch) == 0 || len(stopPriceSubmatch[0]) < 2 {
+		self.sendTgMessage(update.Message.Chat.ID, "Неверный формат сообщения. Видимо вы отправили не то сообщения, попробуйте отправить другой сообщения где будет информация об открытии позиции")
+		return
+	}
+
 	stopPrice, _ := strconv.ParseFloat(stopPriceSubmatch[0][1], 64)
 	stopPercentage, _ := strconv.ParseFloat(stopPriceSubmatch[0][2], 64)
 
